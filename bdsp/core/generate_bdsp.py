@@ -1,9 +1,9 @@
-from ...pla.rng import Xorshift,XOROSHIRO_BDSP
+from ...pla.rng import Xorshift, XOROSHIRO_BDSP
 from .daycare import Daycare
 from ...pla.data import natures
 
-def generate_stationary(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
 
+def generate_stationary(rng: Xorshift, fixed_gender=False, guaranteed_ivs=0):
     ec = rng.alt_next()
     shiny_alt_rand = rng.alt_next()
     pid = rng.alt_next()
@@ -22,10 +22,9 @@ def generate_stationary(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
         shiny = False
         square = False
 
-    ivs = [-1,-1,-1,-1,-1,-1]
+    ivs = [-1, -1, -1, -1, -1, -1]
 
-    
-    for _ in range(0,guaranteed_ivs):
+    for _ in range(0, guaranteed_ivs):
         index = rng.alt_rand(6)
         while ivs[index] != -1:
             index = rng.alt_rand(6)
@@ -34,16 +33,16 @@ def generate_stationary(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
     for i in range(6):
         if ivs[i] == -1:
             ivs[i] = rng.alt_rand(32)
-    
+
     ability = rng.alt_rand(2)
 
-    gender = -1 if fixed_gender else rng.alt_rand(253)+1
+    gender = -1 if fixed_gender else rng.alt_rand(253) + 1
     nature = rng.alt_rand(25)
 
-    return ec,pid,shiny,square,ivs,ability,gender,nature
+    return ec, pid, shiny, square, ivs, ability, gender, nature
 
-def generate_wild(rng:Xorshift, fixed_gender=False):
 
+def generate_wild(rng: Xorshift, fixed_gender=False):
     encounter_rand = rng.rand(100)
 
     rng.advance(84)
@@ -66,28 +65,28 @@ def generate_wild(rng:Xorshift, fixed_gender=False):
         shiny = False
         square = False
 
-    ivs = [-1,-1,-1,-1,-1,-1]
+    ivs = [-1, -1, -1, -1, -1, -1]
 
     for i in range(6):
         if ivs[i] == -1:
             ivs[i] = rng.alt_rand(32)
-    
+
     ability = rng.alt_rand(2)
 
-    gender = -1 if fixed_gender else rng.alt_rand(252)+1
+    gender = -1 if fixed_gender else rng.alt_rand(252) + 1
     nature = rng.alt_rand(25)
 
-    encslots = [20,40,50,60,70,80,85,90,94,98,99,100]
+    encslots = [20, 40, 50, 60, 70, 80, 85, 90, 94, 98, 99, 100]
 
-    for i,value in enumerate(encslots):
+    for i, value in enumerate(encslots):
         if encounter_rand < value:
             slot = i
             break
 
-    return ec,pid,shiny,square,ivs,ability,gender,nature,slot
+    return ec, pid, shiny, square, ivs, ability, gender, nature, slot
 
-def generate_roamer(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
 
+def generate_roamer(rng: Xorshift, fixed_gender=False, guaranteed_ivs=0):
     seed = rng.alt_next()
     ec = seed
 
@@ -105,10 +104,10 @@ def generate_roamer(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
     else:
         shiny = False
         square = False
-    
-    ivs = [-1,-1,-1,-1,-1,-1]
 
-    for _ in range(0,guaranteed_ivs):
+    ivs = [-1, -1, -1, -1, -1, -1]
+
+    for _ in range(0, guaranteed_ivs):
         index = roamer_rng.next() % 6
         while ivs[index] != -1:
             index = roamer_rng.next() % 6
@@ -117,7 +116,7 @@ def generate_roamer(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
     for i in range(6):
         if ivs[i] == -1:
             ivs[i] = roamer_rng.next() % 32
-    
+
     ability = roamer_rng.next() % 1
 
     if fixed_gender:
@@ -125,42 +124,39 @@ def generate_roamer(rng:Xorshift, fixed_gender=False, guaranteed_ivs=0):
     else:
         gender_rand = roamer_rng.next()
         gender = gender_rand - ((gender_rand / 253) * 253) + 1
-    
+
     nature = roamer_rng.next() % 25
 
-    return ec,pid,shiny,square,ivs,ability,gender,nature
+    return ec, pid, shiny, square, ivs, ability, gender, nature
+
 
 def generate_tid(rng: Xorshift):
-
     sidtid = rng.alt_next()
     tid = sidtid & 0xFFFF
     sid = sidtid >> 0x10
 
-    tsv = (tid ^ sid) >>  4
+    tsv = (tid ^ sid) >> 4
 
     g8tid = sidtid % 1000000
 
-    return tid,sid,tsv,g8tid
+    return tid, sid, tsv, g8tid
+
 
 def generate_egg(rng: Xorshift, info: Daycare):
-
     seed = rng.alt_next()
     displayseed = seed
-    
-    if (seed & 0x80000000):
-        seed |= 0xffffffff00000000
+
+    if seed & 0x80000000:
+        seed |= 0xFFFFFFFF00000000
 
     egg_rng = XOROSHIRO_BDSP(seed)
 
-
     if info.is_nido_volbeat():
         egg_rng.next()
-    
-    
-    #genderatio stuff
+
+    # genderatio stuff
 
     ratio = info.get_gender_ratio()
-
 
     if ratio == 255:
         gender = 2
@@ -175,12 +171,10 @@ def generate_egg(rng: Xorshift, info: Daycare):
         else:
             gender = 0
 
-
-    #nature
+    # nature
 
     nature = egg_rng.rand(25)
     nature = natures(nature)
-
 
     if info.get_everstone_count() == 2:
         nature = info.get_parent_nature(egg_rng.rand(2))
@@ -189,8 +183,8 @@ def generate_egg(rng: Xorshift, info: Daycare):
     elif info.get_parent_item(1) == 1:
         nature = info.get_parent_nature(1)
 
-    #ability
-    
+    # ability
+
     parentAbility = info.get_parent_ability(0 if info.is_ditto(1) else 1)
     ability = egg_rng.rand(100)
 
@@ -206,19 +200,19 @@ def generate_egg(rng: Xorshift, info: Daycare):
     else:
         ability = 0 if ability < 80 else 1
 
-    #ivs
-    
-    ivs = [-1,-1,-1,-1,-1,-1]
+    # ivs
+
+    ivs = [-1, -1, -1, -1, -1, -1]
 
     inherit = info.get_inherit()
 
-    for _ in range(0,inherit):
+    for _ in range(0, inherit):
         index = egg_rng.rand(6)
         while ivs[index] != -1:
-            index =  egg_rng.rand(6)
-        p_inherit =  egg_rng.rand(2)
+            index = egg_rng.rand(6)
+        p_inherit = egg_rng.rand(2)
         ivs[index] = info.get_parent_iv(index, p_inherit)
-    
+
     for i in range(6):
         iv = egg_rng.rand(32)
         if ivs[i] == -1:
@@ -230,16 +224,15 @@ def generate_egg(rng: Xorshift, info: Daycare):
     shinyval = 0
 
     for i in range(info.get_pidrolls()):
-        pid = egg_rng.rand(0xffffffff)
+        pid = egg_rng.rand(0xFFFFFFFF)
         tid = info.get_tid()
         sid = info.get_sid()
 
-        shinyval = ((pid >> 16) ^ (sid & 0xFFFF) \
-            ^ (pid & 0xFFFF) ^ (tid & 0xFFFF))
+        shinyval = (pid >> 16) ^ (sid & 0xFFFF) ^ (pid & 0xFFFF) ^ (tid & 0xFFFF)
 
         if shinyval < 0x10:
             break
-    
+
     if shinyval == 0 and pid != 0:
         square = True
         shiny = True

@@ -7,11 +7,14 @@ from ..pla.data import natures
 from ..pla.core import get_bdsp_sprite
 from .filters import compare_all_ivs
 
-with open(RESOURCE_PATH + "resources/text_species_en.txt",encoding="utf-8") as text_species:
+with open(
+    RESOURCE_PATH + "resources/text_species_en.txt", encoding="utf-8"
+) as text_species:
     SPECIES = text_species.read().split("\n")
 
-with open(RESOURCE_PATH + "resources/moves_en.txt",encoding="utf-8") as text_moves:
+with open(RESOURCE_PATH + "resources/moves_en.txt", encoding="utf-8") as text_moves:
     MOVES = text_moves.read().split("\n")
+
 
 def shiny_check(result):
     normal = result.regular_pokemon
@@ -23,13 +26,44 @@ def shiny_check(result):
         return False
     if rare.shiny:
         return True
-    
+
     return False
 
-def check_ug_advance(s0,s1,s2,s3,story_flag,room,version,advances,minadvances,diglett,ivfilter,delay):
 
-    filter = FilterPy(False, None, [0,0,0,0,0,0], [31,31,31,31,31,31], None, None, None, None, None)
-    results = generate_results(advances, [int(s0,16),int(s1,16),int(s2,16),int(s3,16)], version, story_flag, room, filter, diglett)
+def check_ug_advance(
+    s0,
+    s1,
+    s2,
+    s3,
+    story_flag,
+    room,
+    version,
+    advances,
+    minadvances,
+    diglett,
+    ivfilter,
+    delay,
+):
+    filter = FilterPy(
+        False,
+        None,
+        [0, 0, 0, 0, 0, 0],
+        [31, 31, 31, 31, 31, 31],
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    results = generate_results(
+        advances,
+        [int(s0, 16), int(s1, 16), int(s2, 16), int(s3, 16)],
+        version,
+        story_flag,
+        room,
+        filter,
+        diglett,
+    )
     final = {}
 
     for i, result in enumerate(results):
@@ -47,14 +81,18 @@ def check_ug_advance(s0,s1,s2,s3,story_flag,room,version,advances,minadvances,di
                     "ability": mon.ability,
                     "gender": mon.gender,
                     "species": SPECIES[mon.species],
-                    "eggmove": MOVES[mon.egg_move] if mon.egg_move is not None else "None",
+                    "eggmove": MOVES[mon.egg_move]
+                    if mon.egg_move is not None
+                    else "None",
                     "shiny": mon.shiny,
                     "sprite": get_bdsp_sprite(mon.species, mon.shiny),
                     "spawn": f"Spawn {z+1}",
-                    "advances": advance-delay,
-                    "rarespawn": False
+                    "advances": advance - delay,
+                    "rarespawn": False,
                 }
-                if compare_all_ivs(ivfilter['minivs'], ivfilter['maxivs'], monster['ivs']):
+                if compare_all_ivs(
+                    ivfilter["minivs"], ivfilter["maxivs"], monster["ivs"]
+                ):
                     full.append(monster)
             if rare is not None:
                 monster = {
@@ -65,18 +103,23 @@ def check_ug_advance(s0,s1,s2,s3,story_flag,room,version,advances,minadvances,di
                     "ability": rare.ability,
                     "gender": rare.gender,
                     "species": SPECIES[rare.species],
-                    "eggmove": MOVES[rare.egg_move] if rare.egg_move is not None else "None",
+                    "eggmove": MOVES[rare.egg_move]
+                    if rare.egg_move is not None
+                    else "None",
                     "shiny": rare.shiny,
                     "sprite": get_bdsp_sprite(rare.species, rare.shiny),
                     "spawn": "Rare",
-                    "advances": advance-delay,
-                    "rarespawn": True
+                    "advances": advance - delay,
+                    "rarespawn": True,
                 }
-                if compare_all_ivs(ivfilter['minivs'], ivfilter['maxivs'], monster['ivs']):
+                if compare_all_ivs(
+                    ivfilter["minivs"], ivfilter["maxivs"], monster["ivs"]
+                ):
                     full.append(monster)
             final[str(i)] = full
 
     return final
+
 
 """
 if __name__ == "__main__":

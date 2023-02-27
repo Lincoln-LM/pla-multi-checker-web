@@ -1,5 +1,6 @@
 import struct
 
+
 def teleport_to_spawn(reader, coords):
     """Teleports user to point"""
     print("teleporting")
@@ -9,5 +10,5 @@ def teleport_to_spawn(reader, coords):
         cordarray.append(coords[i])
 
     print(f"Teleporting to {cordarray}")
-    position_bytes = struct.pack('fff', *cordarray)
-    reader.write_pointer(playerloc,f"{int.from_bytes(position_bytes,'big'):024X}")
+    position_bytes = struct.pack("fff", *cordarray)
+    reader.write_pointer(playerloc, f"{int.from_bytes(position_bytes,'big'):024X}")

@@ -5,36 +5,37 @@ from ..pla.data import natures
 from .filters import compare_all_ivs
 from .core import Daycare
 
-def read_egg_seed(states, filter, daycare_info, delay):
 
+def read_egg_seed(states, filter, daycare_info, delay):
     daycare = Daycare(**daycare_info)
 
     result = {}
 
     for i in range(4):
-        states[i] = int(states[i],16)
+        states[i] = int(states[i], 16)
 
     rng = Xorshift(*states)
 
-    #advance for delay
+    # advance for delay
 
     for _ in range(delay):
         rng.alt_next()
 
-    #advance to minimum adv
+    # advance to minimum adv
 
-    for _ in range(filter['minadv']):
+    for _ in range(filter["minadv"]):
         rng.alt_next()
 
     compat = daycare.get_compatibility()
 
-    for i in range(filter['maxadv']-filter['minadv']+1):
+    for i in range(filter["maxadv"] - filter["minadv"] + 1):
         rng_copy = Xorshift(*rng.current().copy())
         rng.alt_next()
 
         if rng_copy.alt_rand(100) < compat:
-
-            nature, ability, ivs, ec, pid, shiny, square, gender, seed = generate_egg(rng_copy, daycare)
+            nature, ability, ivs, ec, pid, shiny, square, gender, seed = generate_egg(
+                rng_copy, daycare
+            )
 
             info = {
                 "nature": nature,
@@ -46,10 +47,10 @@ def read_egg_seed(states, filter, daycare_info, delay):
                 "square": square,
                 "gender": gender,
                 "seed": seed,
-                "adv": i + filter['minadv']
+                "adv": i + filter["minadv"],
             }
 
-            #filter out based on IVs
+            # filter out based on IVs
 
             """
             for i in range(6):
@@ -61,7 +62,7 @@ def read_egg_seed(states, filter, daycare_info, delay):
                     filter['maxivs'][i] = 0
             """
 
-            if compare_all_ivs(filter['minivs'], filter['maxivs'], ivs):
+            if compare_all_ivs(filter["minivs"], filter["maxivs"], ivs):
                 result[i] = info
-    
+
     return result

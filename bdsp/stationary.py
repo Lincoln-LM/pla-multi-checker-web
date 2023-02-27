@@ -6,32 +6,38 @@ from ..pla.data import natures
 from .filters import compare_all_ivs
 from ..pla.core import get_bdsp_sprite
 
-with open(RESOURCE_PATH + "resources/text_species_en.txt",encoding="utf-8") as text_species:
+with open(
+    RESOURCE_PATH + "resources/text_species_en.txt", encoding="utf-8"
+) as text_species:
     SPECIES = text_species.read().split("\n")
 
-def read_stationary_seed(states,filter,fixed_ivs=0,set_gender=False,species=0,delay=0):
 
+def read_stationary_seed(
+    states, filter, fixed_ivs=0, set_gender=False, species=0, delay=0
+):
     result = {}
 
     for i in range(4):
-        states[i] = int(states[i],16)
+        states[i] = int(states[i], 16)
 
     rng = Xorshift(*states)
 
-    #advance for delay
+    # advance for delay
 
     for _ in range(delay):
         rng.alt_next()
 
-    #advance to minimum adv
+    # advance to minimum adv
 
-    for _ in range(filter['minadv']):
+    for _ in range(filter["minadv"]):
         rng.alt_next()
-    
-    for i in range(filter['maxadv']-filter['minadv']+1):
+
+    for i in range(filter["maxadv"] - filter["minadv"] + 1):
         rng_copy = Xorshift(*rng.current().copy())
 
-        ec,pid,shiny,square,ivs,ability,gender,nature = generate_stationary(rng_copy, set_gender, 3 if fixed_ivs else 0)
+        ec, pid, shiny, square, ivs, ability, gender, nature = generate_stationary(
+            rng_copy, set_gender, 3 if fixed_ivs else 0
+        )
 
         info = {
             "shiny": shiny,
@@ -42,12 +48,12 @@ def read_stationary_seed(states,filter,fixed_ivs=0,set_gender=False,species=0,de
             "ability": ability,
             "gender": gender,
             "nature": natures(nature),
-            "adv": i + filter['minadv'],
+            "adv": i + filter["minadv"],
             "sprite": get_bdsp_sprite(species, shiny),
-            "species": SPECIES[species]
+            "species": SPECIES[species],
         }
 
-        #filter out based on IVs
+        # filter out based on IVs
 
         """
         for i in range(6):
@@ -59,7 +65,7 @@ def read_stationary_seed(states,filter,fixed_ivs=0,set_gender=False,species=0,de
                 filter['maxivs'][i] = 0
         """
 
-        if compare_all_ivs(filter['minivs'], filter['maxivs'], ivs):
+        if compare_all_ivs(filter["minivs"], filter["maxivs"], ivs):
             result[i] = info
         rng.alt_next()
 

@@ -1,27 +1,28 @@
 from ...pla.data import natures
 
+
 class Daycare:
-
-    def __init__(self, 
-                oval_charm: bool, 
-                shiny_charm: bool, 
-                tid, 
-                sid, 
-                compatibility, 
-                a_ivs, 
-                b_ivs, 
-                a_item, 
-                b_item,
-                masuda: bool,
-                nido_volbeat: bool,
-                a_nature,
-                b_nature,
-                a_ability,
-                b_ability,
-                a_ditto: bool,
-                b_ditto: bool,
-                gender_ratio):
-
+    def __init__(
+        self,
+        oval_charm: bool,
+        shiny_charm: bool,
+        tid,
+        sid,
+        compatibility,
+        a_ivs,
+        b_ivs,
+        a_item,
+        b_item,
+        masuda: bool,
+        nido_volbeat: bool,
+        a_nature,
+        b_nature,
+        a_ability,
+        b_ability,
+        a_ditto: bool,
+        b_ditto: bool,
+        gender_ratio,
+    ):
         self.oval = oval_charm
         self.shiny = shiny_charm
         self.tid = tid
@@ -51,7 +52,6 @@ class Daycare:
         return self.oval
 
     def get_compatibility(self):
-        
         if self.has_oval_charm():
             if self.compatibility == 20:
                 res = 40
@@ -59,11 +59,11 @@ class Daycare:
                 res = 80
             else:
                 res = 88
-            
+
             return res
         else:
             return self.compatibility
-    
+
     def has_shiny_charm(self):
         return self.shiny
 
@@ -79,7 +79,7 @@ class Daycare:
             pidrolls += 6
 
         return pidrolls
-    
+
     def is_nido_volbeat(self):
         return self.nido
 
@@ -109,14 +109,13 @@ class Daycare:
             return self.b_ability
 
     def get_inherit(self):
-
         inherit = 3
 
         if self.get_parent_item(0) == 8 or self.get_parent_item(1) == 8:
             inherit = 5
-        
+
         return inherit
-    
+
     def get_parent_iv(self, index, parent):
         if parent == 0:
             return self.a_iv[index]
@@ -125,7 +124,7 @@ class Daycare:
 
     def get_tid(self):
         return self.tid
-    
+
     def get_sid(self):
         return self.sid
 
